@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import {NFTStakingRewards} from "../src/NFTStakingRewards.sol";
+import "../src/NFTStakingRewards.sol";
+import "../src/MockNFT.sol";
 import "./NFTStakingRewards.t.sol";
-import {MockNFT} from "../src/MockNFT.sol";
 
 contract StakingHandler is Test {
     NFTStakingRewards public stakingContract;
@@ -13,7 +13,7 @@ contract StakingHandler is Test {
     uint256[] public activeTokenIds;
     address[] public actorPool;
 
-    constructor (address _stakingContract, address _mockNFT) {
+    constructor(address _stakingContract, address _mockNFT) {
         stakingContract = NFTStakingRewards(_stakingContract);
         mockNFT = MockNFT(_mockNFT);
 
@@ -22,17 +22,16 @@ contract StakingHandler is Test {
         actorPool.push(makeAddr("Actro_Alice"));
         actorPool.push(makeAddr("Actro_Bob"));
         actorPool.push(makeAddr("Actro_Hacker"));
-
     }
 
     // 1. Randomized Staking Fuzz Function
 
     function stakeRandomNFT(uint256 _actorSeed, uint256 _tierSeed) external {
-        if(actorPool.length == 0) return;
+        if (actorPool.length == 0) return;
         address user = actorPool[_actorSeed % actorPool.length];
 
         // Tier level 1 to 3 bounded
-        uint256 tier = bound(_tierSeed, 1,3);
+        uint256 tier = bound(_tierSeed, 1, 3);
 
         vm.startPrank(user);
         mockNFT.mint(user);
@@ -46,19 +45,18 @@ contract StakingHandler is Test {
         mockNFT.approve(address(stakingContract), tokenId);
         stakingContract.stake(tokenId);
         vm.stopPrank();
-
     }
 
     // 2. Randomized Withdraw Fuzz Function
 
-    function withdrawRandomnNFT(uint256 _tokenSeed) external{
-        if(activeTokenIds.length == 0) return;
+    function withdrawRandomnNFT(uint256 _tokenSeed) external {
+        if (activeTokenIds.length == 0) return;
 
         uint256 tokenId = activeTokenIds[_tokenSeed % activeTokenIds.length];
         address currentStaker = stakingContract.nftOwner(tokenId);
 
         // if token is not available then skip
-        
+
         vm.startPrank(currentStaker);
         stakingContract.withdraw(tokenId);
         vm.stopPrank();
