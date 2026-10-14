@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 import {NFTStakingRewards} from "../src/NFTStakingRewards.sol";
 import {MockNFT} from "../src/MockNFT.sol";
-
 import {Test} from "forge-std/Test.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
